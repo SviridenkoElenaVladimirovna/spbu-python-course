@@ -31,7 +31,7 @@ def test_vector_length_calculation():
 def test_angle_between_vectors_right_angle():
     """Test angle calculation for perpendicular vectors."""
     angle = angle_between_vectors([1, 0], [0, 1])
-    assert math.isclose(angle, math.pi/2)
+    assert math.isclose(angle, math.pi / 2)
 
 
 def test_angle_between_vectors_same_direction():
@@ -43,7 +43,7 @@ def test_angle_between_vectors_same_direction():
 def test_angle_between_vectors_45_degrees():
     """Test angle calculation for 45-degree case."""
     angle = angle_between_vectors([1, 0], [1, 1])
-    assert math.isclose(angle, math.pi/4)
+    assert math.isclose(angle, math.pi / 4)
 
 
 def test_angle_between_vectors_zero_length():
