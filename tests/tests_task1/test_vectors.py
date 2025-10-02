@@ -4,11 +4,7 @@ Test module for vector operations.
 
 import pytest
 import math
-from project.task1.vectors import (
-    dot_product, 
-    vector_length, 
-    angle_between_vectors
-)
+from project.task1.vectors import dot_product, vector_length, angle_between_vectors
 
 
 def test_dot_product_basic_cases():
