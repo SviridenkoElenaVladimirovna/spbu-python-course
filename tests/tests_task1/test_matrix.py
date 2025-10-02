@@ -3,7 +3,6 @@ Test module for matrix operations.
 """
 
 import pytest
-import math
 from project.task1.matrix import (
     matrix_addition,
     matrix_multiplication,
