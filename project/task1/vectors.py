@@ -11,7 +11,18 @@ from typing import List
 
 
 def dot_product(vector1: List[float], vector2: List[float]) -> float:
-    """Calculate dot product of two vectors."""
+    """Calculate dot product of two vectors.
+
+    Args:
+        vector1 (List[float]): First vector.
+        vector2 (List[float]): Second vector.
+
+    Returns:
+        float: Scalar (dot) product of the vectors.
+
+    Raises:
+        ValueError: If vectors have different dimensions.
+    """
     if len(vector1) != len(vector2):
         raise ValueError("Vectors must have same dimensions")
 
@@ -19,12 +30,31 @@ def dot_product(vector1: List[float], vector2: List[float]) -> float:
 
 
 def vector_length(vector: List[float]) -> float:
-    """Calculate length of a vector."""
+    """Calculate length of a vector.
+
+    Args:
+        vector (List[float]): Input vector.
+
+    Returns:
+        float: Euclidean length (magnitude) of the vector.
+    """
     return math.sqrt(sum(x * x for x in vector))
 
 
 def angle_between_vectors(vector1: List[float], vector2: List[float]) -> float:
-    """Calculate angle between two vectors in radians."""
+    """Calculate angle between two vectors in radians.
+
+    Args:
+        vector1 (List[float]): First vector.
+        vector2 (List[float]): Second vector.
+
+    Returns:
+        float: Angle between the vectors in radians.
+
+    Raises:
+        ValueError: If vectors have different dimensions.
+        ValueError: If any vector has zero length.
+    """
     if len(vector1) != len(vector2):
         raise ValueError("Vectors must have same dimensions")
 

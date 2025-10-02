@@ -11,7 +11,18 @@ from typing import List
 def matrix_addition(
     matrix1: List[List[float]], matrix2: List[List[float]]
 ) -> List[List[float]]:
-    """Add two matrices."""
+    """Add two matrices.
+
+    Args:
+        matrix1 (List[List[float]]): First matrix.
+        matrix2 (List[List[float]]): Second matrix.
+
+    Returns:
+        List[List[float]]: Result of matrix addition.
+
+    Raises:
+        ValueError: If matrices have different dimensions.
+    """
     if len(matrix1) != len(matrix2) or len(matrix1[0]) != len(matrix2[0]):
         raise ValueError("Matrices must have same dimensions")
 
@@ -24,7 +35,19 @@ def matrix_addition(
 def matrix_multiplication(
     matrix1: List[List[float]], matrix2: List[List[float]]
 ) -> List[List[float]]:
-    """Multiply two matrices."""
+    """Multiply two matrices.
+
+    Args:
+        matrix1 (List[List[float]]): First matrix.
+        matrix2 (List[List[float]]): Second matrix.
+
+    Returns:
+        List[List[float]]: Result of matrix multiplication.
+
+    Raises:
+        ValueError: If the number of columns in the first matrix
+            does not equal the number of rows in the second matrix.
+    """
     if len(matrix1[0]) != len(matrix2):
         raise ValueError(
             "Number of columns in first matrix must equal number of rows in second matrix"
@@ -41,7 +64,14 @@ def matrix_multiplication(
 
 
 def matrix_transpose(matrix: List[List[float]]) -> List[List[float]]:
-    """Transpose a matrix."""
+    """Transpose a matrix.
+
+    Args:
+        matrix (List[List[float]]): Input matrix.
+
+    Returns:
+        List[List[float]]: Transposed matrix.
+    """
     return [
         [float(matrix[i][j]) for i in range(len(matrix))] for j in range(len(matrix[0]))
     ]
