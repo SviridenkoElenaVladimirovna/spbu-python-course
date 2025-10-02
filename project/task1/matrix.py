@@ -30,7 +30,7 @@ def matrix_multiplication(
             "Number of columns in first matrix must equal number of rows in second matrix"
         )
 
-    result = [[0 for _ in range(len(matrix2[0]))] for _ in range(len(matrix1))]
+    result = [[0.0 for _ in range(len(matrix2[0]))] for _ in range(len(matrix1))]
 
     for i in range(len(matrix1)):
         for j in range(len(matrix2[0])):
@@ -42,4 +42,4 @@ def matrix_multiplication(
 
 def matrix_transpose(matrix: List[List[float]]) -> List[List[float]]:
     """Transpose a matrix."""
-    return [[matrix[i][j] for i in range(len(matrix))] for j in range(len(matrix[0]))]
+    return [[float(matrix[i][j]) for i in range(len(matrix))] for j in range(len(matrix[0]))]
