@@ -1,3 +1,7 @@
+"""
+
+Tests for the streaming operations module
+"""
 import pytest
 from typing import List, Any, Iterator, Generator, Iterable
 from project.task2.generators import (
@@ -8,7 +12,7 @@ from project.task2.generators import (
     map_stream,
     filter_stream,
     zip_stream,
-    reduce_stream
+    reduce_stream,
 )
 
 
@@ -21,7 +25,7 @@ def sample_numbers() -> List[int]:
 @pytest.fixture
 def sample_strings() -> List[str]:
     """Fixture providing sample string data for testing."""
-    return ['apple', 'banana', 'cherry', 'date', 'elderberry']
+    return ["apple", "banana", "cherry", "date", "elderberry"]
 
 
 def test_stream_basic(sample_numbers: List[int]) -> None:
@@ -36,11 +40,14 @@ def test_stream_empty() -> None:
     assert result == []
 
 
-@pytest.mark.parametrize("input_data,expected", [
-    ([1, 2, 3], [1, 2, 3]),
-    (range(3), [0, 1, 2]),
-    ((x for x in range(3)), [0, 1, 2]),
-])
+@pytest.mark.parametrize(
+    "input_data,expected",
+    [
+        ([1, 2, 3], [1, 2, 3]),
+        (range(3), [0, 1, 2]),
+        ((x for x in range(3)), [0, 1, 2]),
+    ],
+)
 def test_stream_various_sources(input_data: Iterable, expected: List) -> None:
     """Test stream creation from different data sources."""
     result = collect(stream(input_data))
@@ -65,9 +72,9 @@ def test_filter_stream(sample_numbers: List[int]) -> None:
 
 def test_zip_stream() -> None:
     """Test zip operation combining stream with other iterables."""
-    zipper = zip_stream(['a', 'b', 'c'])
+    zipper = zip_stream(["a", "b", "c"])
     result = collect(zipper(stream([1, 2, 3])))
-    expected = [(1, 'a'), (2, 'b'), (3, 'c')]
+    expected = [(1, "a"), (2, "b"), (3, "c")]
     assert result == expected
 
 
@@ -111,8 +118,10 @@ def test_run_pipeline_complex_sequence(sample_numbers: List[int]) -> None:
     map_double = map_stream(lambda x: x * 2)
     filter_even = filter_stream(lambda x: x % 4 == 0)
     map_add_one = map_stream(lambda x: x + 1)
-    
-    result_stream = run_pipeline(stream(sample_numbers), map_double, filter_even, map_add_one)
+
+    result_stream = run_pipeline(
+        stream(sample_numbers), map_double, filter_even, map_add_one
+    )
     result = collect(result_stream)
     expected = [5, 9, 13, 17, 21]
     assert result == expected
@@ -137,12 +146,13 @@ def test_collect_to_dict(sample_strings: List[str]) -> None:
     stream_iter = stream(sample_strings[:3])
     processed = enum_op(stream_iter)
     result = collect(processed, dict)
-    expected = {0: 'apple', 1: 'banana', 2: 'cherry'}
+    expected = {0: "apple", 1: "banana", 2: "cherry"}
     assert result == expected
 
 
 def test_custom_operation(sample_numbers: List[int]) -> None:
     """Test using custom operation with adapt_operation."""
+
     def custom_multiply(stream_iter: Iterator[int]) -> Generator[int, None, None]:
         for item in stream_iter:
             yield item * 3
@@ -163,14 +173,14 @@ def test_lazy_evaluation(sample_numbers: List[int]) -> None:
 
     mapper = map_stream(tracking_map)
     stream_iter = mapper(stream(sample_numbers))
-    
+
     assert len(evaluation_tracker) == 0
-    
+
     first_item = next(stream_iter)
     assert first_item == 2
     assert len(evaluation_tracker) == 1
     assert evaluation_tracker == [1]
-    
+
     second_item = next(stream_iter)
     assert second_item == 4
     assert len(evaluation_tracker) == 2
@@ -186,16 +196,19 @@ def test_empty_stream_through_pipeline() -> None:
     assert result == []
 
 
-@pytest.mark.parametrize("operations,expected", [
-    ([
-        map_stream(lambda x: x * 3),
-        filter_stream(lambda x: x % 2 == 1)
-    ], [3, 9, 15]),
-    ([
-        map_stream(lambda x: x + 10),
-        filter_stream(lambda x: x < 15)
-    ], [11, 12, 13, 14]),
-])
+@pytest.mark.parametrize(
+    "operations,expected",
+    [
+        (
+            [map_stream(lambda x: x * 3), filter_stream(lambda x: x % 2 == 1)],
+            [3, 9, 15],
+        ),
+        (
+            [map_stream(lambda x: x + 10), filter_stream(lambda x: x < 15)],
+            [11, 12, 13, 14],
+        ),
+    ],
+)
 def test_parametrized_operations(operations: List, expected: List[int]) -> None:
     """Test various operation combinations using parametrized testing."""
     result_stream = run_pipeline(stream([1, 2, 3, 4, 5]), *operations)
@@ -207,15 +220,15 @@ def test_adapt_operation_with_enumerate(sample_strings: List[str]) -> None:
     """Test adapt_operation with enumerate function."""
     enum_op = adapt_operation(enumerate, start=1)
     result = collect(enum_op(stream(sample_strings[:3])))
-    expected = [(1, 'apple'), (2, 'banana'), (3, 'cherry')]
+    expected = [(1, "apple"), (2, "banana"), (3, "cherry")]
     assert result == expected
 
 
 def test_zip_stream_multiple_iterables() -> None:
     """Test zip operation with multiple iterables."""
-    zipper = zip_stream([10, 20, 30], ['a', 'b', 'c'])
+    zipper = zip_stream([10, 20, 30], ["a", "b", "c"])
     result = collect(zipper(stream([1, 2, 3])))
-    expected = [(1, 10, 'a'), (2, 20, 'b'), (3, 30, 'c')]
+    expected = [(1, 10, "a"), (2, 20, "b"), (3, 30, "c")]
     assert result == expected
 
 
@@ -224,8 +237,10 @@ def test_pipeline_with_mixed_operations(sample_numbers: List[int]) -> None:
     map_op = map_stream(lambda x: x * 3)
     filter_op = filter_stream(lambda x: x > 10)
     reduce_op = reduce_stream(lambda x, y: x + y)
-    
-    result_stream = run_pipeline(stream(sample_numbers[:4]), map_op, filter_op, reduce_op)
+
+    result_stream = run_pipeline(
+        stream(sample_numbers[:4]), map_op, filter_op, reduce_op
+    )
     result = collect(result_stream)
-    expected = [12] 
+    expected = [12]
     assert result == expected

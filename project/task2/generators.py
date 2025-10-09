@@ -22,7 +22,9 @@ def stream(source: Iterable[Any]) -> Iterator[Any]:
         yield item
 
 
-def adapt_operation(func: Callable, *args: Any, **kwargs: Any) -> Callable[[Iterator[Any]], Iterator[Any]]:
+def adapt_operation(
+    func: Callable, *args: Any, **kwargs: Any
+) -> Callable[[Iterator[Any]], Iterator[Any]]:
     """
     Wrap a function to make it compatible with the lazy stream pipeline.
 
@@ -37,30 +39,39 @@ def adapt_operation(func: Callable, *args: Any, **kwargs: Any) -> Callable[[Iter
     Returns:
         Callable[[Iterator[Any]], Iterator[Any]]: Adapted operation
     """
+
     def operation(stream_iter: Iterator[Any]) -> Iterator[Any]:
         if func is map:
             yield from map(args[0], stream_iter)
+
         elif func is filter:
             yield from filter(args[0], stream_iter)
+
         elif func is zip:
             yield from zip(stream_iter, *args)
+
         elif func is enumerate:
             yield from enumerate(stream_iter, *args, **kwargs)
+
         elif func is reduce:
-            reducer=args[0]
-            if len(args)>1:
-                result = reduce(reducer,stream_iter,args[1])
-            elif "initial" in kwargs:
-                result = reduce(reducer,stream_iter,kwargs["initial"])
+            reducer = args[0]
+            if len(args) > 1 and args[1] is not None:
+                result = reduce(reducer, stream_iter, args[1])
+            elif "initial" in kwargs and kwargs["initial"] is not None:
+                result = reduce(reducer, stream_iter, kwargs["initial"])
             else:
-                result=reduce(reducer,stream_iter)
+                result = reduce(reducer, stream_iter)
             yield result
+
         else:
             yield from func(stream_iter, *args, **kwargs)
+
     return operation
 
 
-def run_pipeline(stream_iter: Iterator[Any], *operations: Callable[[Iterator[Any]], Iterator[Any]]) -> Iterator[Any]:
+def run_pipeline(
+    stream_iter: Iterator[Any], *operations: Callable[[Iterator[Any]], Iterator[Any]]
+) -> Iterator[Any]:
     """
     Apply a sequence of operations to the stream lazily.
 
@@ -77,7 +88,12 @@ def run_pipeline(stream_iter: Iterator[Any], *operations: Callable[[Iterator[Any
     return current
 
 
-def collect(stream_iter: Iterator[Any], collector: Callable[..., Any] = list, *args: Any, **kwargs: Any) -> Any:
+def collect(
+    stream_iter: Iterator[Any],
+    collector: Callable[..., Any] = list,
+    *args: Any,
+    **kwargs: Any
+) -> Any:
     """
     Collect items from a stream into a specified collection type.
 
@@ -105,7 +121,9 @@ def map_stream(func: Callable[[Any], Any]) -> Callable[[Iterator[Any]], Iterator
     return adapt_operation(map, func)
 
 
-def filter_stream(predicate: Callable[[Any], bool]) -> Callable[[Iterator[Any]], Iterator[Any]]:
+def filter_stream(
+    predicate: Callable[[Any], bool]
+) -> Callable[[Iterator[Any]], Iterator[Any]]:
     """
     Create a filter operation for the stream pipeline.
 
@@ -131,7 +149,9 @@ def zip_stream(*others: Iterable[Any]) -> Callable[[Iterator[Any]], Iterator[Any
     return adapt_operation(zip, *others)
 
 
-def enumerate_stream(*args: Any, **kwargs: Any) -> Callable[[Iterator[Any]], Iterator[Any]]:
+def enumerate_stream(
+    *args: Any, **kwargs: Any
+) -> Callable[[Iterator[Any]], Iterator[Any]]:
     """
     Create an enumerate operation for the stream pipeline.
 
@@ -144,7 +164,9 @@ def enumerate_stream(*args: Any, **kwargs: Any) -> Callable[[Iterator[Any]], Ite
     return adapt_operation(enumerate, *args, **kwargs)
 
 
-def reduce_stream(func: Callable[[Any, Any], Any], initial: Any = None) -> Callable[[Iterator[Any]], Iterator[Any]]:
+def reduce_stream(
+    func: Callable[[Any, Any], Any], initial: Any = None
+) -> Callable[[Iterator[Any]], Iterator[Any]]:
     """
     Create a reduce operation for the stream pipeline.
 
