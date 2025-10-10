@@ -42,27 +42,21 @@ def adapt_operation(
 
     def operation(stream_iter: Iterator[Any]) -> Iterator[Any]:
         if func is map:
-            yield from map(args[0], stream_iter)
+            yield from func(args[0], stream_iter)
 
         elif func is filter:
-            yield from filter(args[0], stream_iter)
+            yield from func(args[0], stream_iter)
 
         elif func is zip:
-            yield from zip(stream_iter, *args)
+            yield from func(stream_iter, *args)
 
         elif func is enumerate:
-            yield from enumerate(stream_iter, *args, **kwargs)
+            yield from func(stream_iter, *args, **kwargs)
 
         elif func is reduce:
-            reducer = args[0]
-            if len(args) > 1 and args[1] is not None:
-                result = reduce(reducer, stream_iter, args[1])
-            elif "initial" in kwargs and kwargs["initial"] is not None:
-                result = reduce(reducer, stream_iter, kwargs["initial"])
-            else:
-                result = reduce(reducer, stream_iter)
+            initial = args[1] if len(args) > 1 and args[1] is not None else kwargs.get("initial")
+            result = func(args[0], stream_iter, initial) if initial is not None else func(args[0], stream_iter)
             yield result
-
         else:
             yield from func(stream_iter, *args, **kwargs)
 
@@ -177,4 +171,7 @@ def reduce_stream(
     Returns:
         Callable[[Iterator[Any]], Iterator[Any]]: Stream reduce operation
     """
-    return adapt_operation(reduce, func, initial)
+    if initial is not None:
+        return adapt_operation(reduce, func, initial)
+    else:
+        return adapt_operation(reduce, func)
