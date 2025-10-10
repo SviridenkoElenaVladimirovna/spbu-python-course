@@ -54,8 +54,16 @@ def adapt_operation(
             yield from func(stream_iter, *args, **kwargs)
 
         elif func is reduce:
-            initial = args[1] if len(args) > 1 and args[1] is not None else kwargs.get("initial")
-            result = func(args[0], stream_iter, initial) if initial is not None else func(args[0], stream_iter)
+            initial = (
+                args[1]
+                if len(args) > 1 and args[1] is not None
+                else kwargs.get("initial")
+            )
+            result = (
+                func(args[0], stream_iter, initial)
+                if initial is not None
+                else func(args[0], stream_iter)
+            )
             yield result
         else:
             yield from func(stream_iter, *args, **kwargs)
