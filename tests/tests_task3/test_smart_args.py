@@ -335,3 +335,123 @@ def test_smart_args_without_parameters():
 
     with pytest.raises(ValueError):
         func()
+
+
+def test_evaluated_with_isolated_raises_error():
+    """Test that Evaluated(Isolated()) raises AssertionError."""
+    with pytest.raises(
+        AssertionError, match="Evaluated must receive a callable object"
+    ):
+        Evaluated(Isolated())
+
+
+def test_isolated_does_not_accept_arguments():
+    """Test that Isolated() does not accept any arguments."""
+    with pytest.raises(TypeError):
+        Isolated("some argument")
+
+
+def test_smart_args_detects_both_evaluated_and_isolated():
+    """Test that @smart_args detects when argument has both Evaluated and Isolated."""
+
+    @smart_args
+    def func_with_evaluated(*, x: str = Evaluated(lambda: "default")):
+        return x
+
+    @smart_args
+    def func_with_isolated(*, x: str = Isolated()):
+        return x
+
+    assert func_with_evaluated() == "default"
+    assert func_with_isolated(x="test") == "test"
+
+
+def test_evaluated_with_non_callable_raises_error():
+    """Test that Evaluated with non-callable raises AssertionError."""
+    with pytest.raises(
+        AssertionError, match="Evaluated must receive a callable object"
+    ):
+        Evaluated("not a callable")
+
+    with pytest.raises(
+        AssertionError, match="Evaluated must receive a callable object"
+    ):
+        Evaluated(123)
+
+    with pytest.raises(
+        AssertionError, match="Evaluated must receive a callable object"
+    ):
+        Evaluated([1, 2, 3])
+
+
+def test_evaluated_with_function_that_takes_arguments_raises_error():
+    """Test that Evaluated with function that takes arguments raises AssertionError."""
+
+    def func_with_args(x):
+        return x
+
+    def func_with_multiple_args(a, b, c):
+        return a + b + c
+
+    with pytest.raises(
+        AssertionError, match="Function for Evaluated must take no arguments"
+    ):
+        Evaluated(func_with_args)
+
+    with pytest.raises(
+        AssertionError, match="Function for Evaluated must take no arguments"
+    ):
+        Evaluated(func_with_multiple_args)
+
+
+def test_evaluated_with_valid_functions():
+    """Test that Evaluated works with valid callables that take no arguments."""
+
+    def no_args_func():
+        return "result"
+
+    lambda_no_args = lambda: "lambda_result"
+
+    def func_with_varargs(*args, **kwargs):
+        return "varargs_result"
+
+    evaluated1 = Evaluated(no_args_func)
+    evaluated2 = Evaluated(lambda_no_args)
+    evaluated3 = Evaluated(func_with_varargs)
+
+    assert evaluated1() == "result"
+    assert evaluated2() == "lambda_result"
+    assert evaluated3() == "varargs_result"
+
+
+def test_isolated_requires_explicit_argument():
+    """Test that Isolated arguments must be explicitly provided."""
+
+    @smart_args
+    def func(*, data: list = Isolated()):
+        return data
+
+    result = func(data=[1, 2, 3])
+    assert result == [1, 2, 3]
+
+    with pytest.raises(
+        ValueError,
+        match="Argument 'data' with Isolated\\(\\) must be explicitly provided",
+    ):
+        func()
+
+
+def test_smart_args_positional_arguments_error():
+    """Test that @smart_args requires keyword-only arguments."""
+
+    with pytest.raises(AssertionError):
+
+        @smart_args
+        def invalid_func(x, y):
+            return x + y
+
+    @smart_args
+    def valid_func(*, x, y):
+        return x + y
+
+    assert valid_func(x=1, y=2) == 3

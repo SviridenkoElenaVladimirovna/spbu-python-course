@@ -208,7 +208,7 @@ def test_uncurry_arbitrary_arity():
     assert uncurried("A", "B", "C") == "ABC"
 
 
-def test_curry_arity_zero():
+def test_curry_arity_zero_additional():
     """Check currying of a zero-arity function."""
 
     def greet():
@@ -218,7 +218,7 @@ def test_curry_arity_zero():
     assert curried() == "Hello"
 
 
-def test_curry_too_many_arguments():
+def test_curry_too_many_arguments_additional():
     """Verify that passing more than one argument at once raises an error."""
 
     def add3(a, b, c):
@@ -479,37 +479,107 @@ def test_cache_disabled():
     assert len(calls) == 2
 
 
-def test_curry_invalid_nested_calls_evaluated_isolated():
-    """Check that f(x=Evaluated(Isolated())) raises an error."""
-
-    def f(x):
-        return x
-
-    def Evaluated(x):
-        return x
-
-    def Isolated(x):
-        return x
-
-    curried = curry_explicit(f, 1)
-
-    with pytest.raises(Exception):
-        curried(x=Evaluated(Isolated(123)))
+def test_curry_with_len_function():
+    """Test currying with built-in len function."""
+    curried_len = curry_explicit(len, 1)
+    assert curried_len([1, 2, 3]) == 3
+    assert curried_len("hello") == 5
 
 
-def test_curry_invalid_nested_calls_isolated_evaluated():
-    """Check that f(x=Isolated(Evaluated())) raises an error."""
+def test_curry_with_str_function():
+    """Test currying with built-in str function."""
+    curried_str = curry_explicit(str, 1)
+    assert curried_str(123) == "123"
+    assert curried_str([1, 2, 3]) == "[1, 2, 3]"
 
-    def f(x):
-        return x
 
-    def Evaluated(x):
-        return x
+def test_curry_with_max_function():
+    """Test currying with built-in max function."""
+    curried_max = curry_explicit(max, 1)
+    assert curried_max([1, 5, 3]) == 5
 
-    def Isolated(x):
-        return x
 
-    curried = curry_explicit(f, 1)
+def test_cache_with_len_function():
+    """Test caching with built-in len function."""
+    call_count = 0
 
-    with pytest.raises(Exception):
-        curried(x=Isolated(Evaluated(123)))
+    @cache(times=2)
+    def cached_len(obj):
+        nonlocal call_count
+        call_count += 1
+        return len(obj)
+
+    assert cached_len((1, 2, 3)) == 3
+    assert call_count == 1
+
+    assert cached_len((1, 2, 3)) == 3
+    assert call_count == 1
+
+
+def test_cache_with_str_function():
+    """Test caching with built-in str function."""
+    call_count = 0
+
+    @cache(times=1)
+    def cached_str(obj):
+        nonlocal call_count
+        call_count += 1
+        return str(obj)
+
+    assert cached_str(123) == "123"
+    assert call_count == 1
+
+    assert cached_str(123) == "123"
+    assert call_count == 1
+
+
+def test_curry_strict_single_argument():
+    """Test that curried functions accept only one argument per intermediate call."""
+
+    def add_three(a, b, c):
+        return a + b + c
+
+    curried = curry_explicit(add_three, 3)
+
+    assert curried(1)(2)(3) == 6
+
+    with pytest.raises(
+        ValueError,
+        match="Curried function must be called with exactly one argument, got 2",
+    ):
+        curried(1)(2, 3)
+
+
+def test_curry_single_argument_constraint_after_partial():
+    """Test single argument constraint after partial application."""
+
+    def multiply_four(a, b, c, d):
+        return a * b * c * d
+
+    curried = curry_explicit(multiply_four, 4)
+
+    partial = curried(2)
+    partial2 = partial(3)
+
+    with pytest.raises(
+        ValueError,
+        match="Curried function must be called with exactly one argument, got 2",
+    ):
+        partial2(4, 5)
+
+
+def test_cache_with_bool_function():
+    """Test caching with built-in bool function."""
+    call_count = 0
+
+    @cache(times=1)
+    def cached_bool(x):
+        nonlocal call_count
+        call_count += 1
+        return bool(x)
+
+    assert cached_bool(0) is False
+    assert call_count == 1
+
+    assert cached_bool(0) is False
+    assert call_count == 1
