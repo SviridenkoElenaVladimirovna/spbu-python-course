@@ -42,9 +42,12 @@ def curry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., An
             return function(*args)
         else:
 
-            def next_curried(next_arg: Any) -> Any:
-                return curried(*(args + (next_arg,)))
-
+            def next_curried(*next_args: Any) -> Any:
+                if len(next_args) != 1:
+                    raise ValueError(
+                        f"Curried function must be called with exactly one argument, got {len(next_args)}"
+                    )
+                return curried(*(args + next_args))
             return next_curried
 
     return curried
@@ -87,6 +90,8 @@ def uncurry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., 
 
 
 def cache(
+     func: Optional[Callable[..., Any]] = None,
+    *,
     times: Optional[int] = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
 
@@ -104,21 +109,18 @@ def cache(
     Raises:
         ValueError: If `times` is negative or not an integer.
     """
-    if times is None:
 
-        def no_cache_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+ 
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        if times is None:
             @functools.wraps(func)
             def wrapper(*args: Any, **kwargs: Any) -> Any:
                 return func(*args, **kwargs)
-
             return wrapper
 
-        return no_cache_decorator
+        if not isinstance(times, int) or times < 0:
+            raise ValueError("Cache times must be a non-negative integer")
 
-    if not isinstance(times, int) or times < 0:
-        raise ValueError("Cache times must be a non-negative integer")
-
-    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         cache_storage: "OrderedDict[Tuple[Tuple[Any, ...], frozenset], Tuple[Any, int]]" = (
             OrderedDict()
         )
@@ -143,5 +145,8 @@ def cache(
             return result
 
         return wrapper
+    
+    if func is not None and callable(func):
+        return decorator(func)
 
     return decorator
