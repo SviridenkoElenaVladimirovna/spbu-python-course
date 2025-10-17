@@ -293,42 +293,6 @@ def test_no_cache():
     assert call_count == 2  
 
 
-def test_cache_clear():
-    """Test cache clearing functionality."""
-    call_count = 0
-    
-    @cache(times=2)
-    def test_func(x):
-        nonlocal call_count
-        call_count += 1
-        return x
-    
-    test_func(1)
-    assert call_count == 1
-    
-    test_func(1)
-    assert call_count == 1
-    
-    test_func.cache_clear()
-    
-    test_func(1)
-    assert call_count == 2
-
-
-def test_cache_info():
-    """Test cache information method."""
-    @cache(times=3)
-    def test_func(x):
-        return x
-    
-    test_func(1)
-    test_func(2)
-    test_func(1)  
-    info = test_func.cache_info()
-    assert info['maxsize'] == 3
-    assert info['currsize'] == 2  
-
-
 def test_cache_with_complex_arguments():
     """Test caching with complex argument types."""
     @cache(times=2)

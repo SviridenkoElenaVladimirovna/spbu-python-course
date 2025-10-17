@@ -2,7 +2,7 @@
 Module for carrying and caching results.
 """
 
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable, Dict, Tuple, Optional
 from collections import OrderedDict
 import functools
 
@@ -80,7 +80,8 @@ def uncurry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., 
     return uncurried
 
 
-def cache(times: int = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def cache(times: Optional[int] = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+
     """
     Decorator that caches the results of function calls.
     
@@ -127,20 +128,6 @@ def cache(times: int = None) -> Callable[[Callable[..., Any]], Callable[..., Any
                 cache_storage.popitem(last=False)
 
             return result
-
-        def cache_clear() -> None:
-            """Clear the cache."""
-            cache_storage.clear()
-
-        def cache_info() -> Dict[str, int]:
-            """Return cache information."""
-            return {
-                'maxsize': times,
-                'currsize': len(cache_storage)
-            }
-
-        wrapper.cache_clear = cache_clear
-        wrapper.cache_info = cache_info
 
         return wrapper
 
