@@ -48,6 +48,7 @@ def curry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., An
                         f"Curried function must be called with exactly one argument, got {len(next_args)}"
                     )
                 return curried(*(args + next_args))
+
             return next_curried
 
     return curried
@@ -90,7 +91,7 @@ def uncurry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., 
 
 
 def cache(
-     func: Optional[Callable[..., Any]] = None,
+    func: Optional[Callable[..., Any]] = None,
     *,
     times: Optional[int] = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
@@ -110,13 +111,14 @@ def cache(
         ValueError: If `times` is negative or not an integer.
     """
 
- 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         if times is None:
+
             @functools.wraps(func)
-            def wrapper(*args: Any, **kwargs: Any) -> Any:
+            def no_cache_wrapper(*args: Any, **kwargs: Any) -> Any:
                 return func(*args, **kwargs)
-            return wrapper
+
+            return no_cache_wrapper
 
         if not isinstance(times, int) or times < 0:
             raise ValueError("Cache times must be a non-negative integer")
@@ -145,7 +147,7 @@ def cache(
             return result
 
         return wrapper
-    
+
     if func is not None and callable(func):
         return decorator(func)
 
