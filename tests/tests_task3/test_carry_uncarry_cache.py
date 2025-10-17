@@ -1,7 +1,8 @@
 """
 A set of unit tests for the curry_explicit, uncurry_explicit functions, and the cache decorator.
 """
-
+import math
+import operator
 import pytest
 import time
 from project.task3.carry_uncarry_cache import curry_explicit, uncurry_explicit, cache
@@ -172,6 +173,69 @@ def test_curry_edge_cases():
     f1 = curry_explicit(lambda x: x, 1)
     assert f1(100) == 100
 
+def test_curry_with_builtin_function():
+    """Check currying of a built-in function (operator.add)."""
+    f = curry_explicit(operator.add, 2)
+    assert f(2)(3) == 5
+
+
+def test_uncurry_with_builtin_function():
+    """Check uncurrying of a curried built-in function (operator.mul)."""
+    f = curry_explicit(operator.mul, 2)
+    g = uncurry_explicit(f, 2)
+    assert g(4, 5) == 20
+
+
+def test_curry_arbitrary_arity():
+    """Check currying of a user-defined function with arbitrary arity."""
+    def combine(a, b, c):
+        return f"{a}-{b}-{c}"
+
+    curried = curry_explicit(combine, 3)
+    assert curried("x")("y")("z") == "x-y-z"
+
+
+def test_uncurry_arbitrary_arity():
+    """Check uncurrying of a curried function with arbitrary arity."""
+    def concat(a, b, c):
+        return a + b + c
+
+    curried = curry_explicit(concat, 3)
+    uncurried = uncurry_explicit(curried, 3)
+    assert uncurried("A", "B", "C") == "ABC"
+
+
+def test_curry_arity_zero():
+    """Check currying of a zero-arity function."""
+    def greet():
+        return "Hello"
+    curried = curry_explicit(greet, 0)
+    assert curried() == "Hello"
+
+
+def test_curry_too_many_arguments():
+    """Verify that passing more than one argument at once raises an error."""
+    def add3(a, b, c):
+        return a + b + c
+
+    curried = curry_explicit(add3, 3)
+
+    with pytest.raises(ValueError):
+        curried(1)(2, 3)
+
+    with pytest.raises(ValueError):
+        curried(1, 2, 3, 4)
+
+
+def test_uncurry_invalid_arity():
+    """Verify that uncurrying checks the exact number of arguments."""
+    def add(a, b):
+        return a + b
+
+    curried = curry_explicit(add, 2)
+    uncurried = uncurry_explicit(curried, 2)
+    with pytest.raises(ValueError):
+        uncurried(1)
 
 def test_cache_basic():
     """Test basic caching functionality."""
@@ -281,7 +345,7 @@ def test_no_cache():
     """Test behavior when cache is disabled (times=None)."""
     call_count = 0
 
-    @cache(times=None)
+    @cache
     def test_func(x):
         nonlocal call_count
         call_count += 1
@@ -345,3 +409,93 @@ def test_cache_error_cases():
         @cache(times="invalid")
         def test_func(x):
             return x
+def test_cache_with_builtin_function():
+    """Check that caching works correctly with built-in functions."""
+    calls = []
+
+    @cache(times=2)
+    def cached_sqrt(x):
+        calls.append(x)
+        return math.sqrt(x)
+
+    assert cached_sqrt(4) == 2
+    assert cached_sqrt(4) == 2
+    assert len(calls) == 1
+
+
+def test_cache_with_multiple_args():
+    """Check that cache distinguishes positional and keyword arguments."""
+    calls = []
+
+    @cache(times=2)
+    def add(a, b=0):
+        calls.append((a, b))
+        return a + b
+
+    assert add(1, b=2) == 3
+    assert add(1, b=2) == 3
+    assert len(calls) == 1
+    assert add(2, b=2) == 4
+    assert len(calls) == 2
+
+
+def test_cache_eviction():
+    """Check that old cache entries are evicted when the limit is exceeded."""
+    calls = []
+
+    @cache(times=2)
+    def square(x):
+        calls.append(x)
+        return x * x
+
+    square(1)
+    square(2)
+    square(3)
+    square(1)
+    assert calls.count(1) == 2
+
+
+def test_cache_disabled():
+    """Check that no caching occurs when times=None."""
+    calls = []
+
+    @cache(times=None)
+    def cube(x):
+        calls.append(x)
+        return x ** 3
+
+    cube(2)
+    cube(2)
+    assert len(calls) == 2
+    
+def test_curry_invalid_nested_calls_evaluated_isolated():
+    """Check that f(x=Evaluated(Isolated())) raises an error."""
+    def f(x):
+        return x
+
+    def Evaluated(x):
+        return x
+
+    def Isolated(x):
+        return x
+
+    curried = curry_explicit(f, 1)
+
+    with pytest.raises(Exception):
+        curried(x=Evaluated(Isolated(123)))
+
+def test_curry_invalid_nested_calls_isolated_evaluated():
+    """Check that f(x=Isolated(Evaluated())) raises an error."""
+    def f(x):
+        return x
+
+    def Evaluated(x):
+        return x
+
+    def Isolated(x):
+        return x
+
+    curried = curry_explicit(f, 1)
+
+    with pytest.raises(Exception):
+        curried(x=Isolated(Evaluated(123)))
