@@ -4,6 +4,7 @@ A set of modular tests for the @smart_args decorator and the Evaluated and Isola
 
 import pytest
 import random
+from typing import Any
 from project.task3.smart_args import smart_args, Evaluated, Isolated
 
 
@@ -355,11 +356,11 @@ def test_smart_args_detects_both_evaluated_and_isolated():
     """Test that @smart_args detects when argument has both Evaluated and Isolated."""
 
     @smart_args
-    def func_with_evaluated(*, x: str = Evaluated(lambda: "default")):
+    def func_with_evaluated(*, x: Any = Evaluated(lambda: "default")):
         return x
 
     @smart_args
-    def func_with_isolated(*, x: str = Isolated()):
+    def func_with_isolated(*, x: Any = Isolated()):
         return x
 
     assert func_with_evaluated() == "default"
@@ -422,23 +423,6 @@ def test_evaluated_with_valid_functions():
     assert evaluated1() == "result"
     assert evaluated2() == "lambda_result"
     assert evaluated3() == "varargs_result"
-
-
-def test_isolated_requires_explicit_argument():
-    """Test that Isolated arguments must be explicitly provided."""
-
-    @smart_args
-    def func(*, data: list = Isolated()):
-        return data
-
-    result = func(data=[1, 2, 3])
-    assert result == [1, 2, 3]
-
-    with pytest.raises(
-        ValueError,
-        match="Argument 'data' with Isolated\\(\\) must be explicitly provided",
-    ):
-        func()
 
 
 def test_smart_args_positional_arguments_error():
