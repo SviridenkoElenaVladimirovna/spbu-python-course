@@ -173,6 +173,7 @@ def test_curry_edge_cases():
     f1 = curry_explicit(lambda x: x, 1)
     assert f1(100) == 100
 
+
 def test_curry_with_builtin_function():
     """Check currying of a built-in function (operator.add)."""
     f = curry_explicit(operator.add, 2)
@@ -188,6 +189,7 @@ def test_uncurry_with_builtin_function():
 
 def test_curry_arbitrary_arity():
     """Check currying of a user-defined function with arbitrary arity."""
+
     def combine(a, b, c):
         return f"{a}-{b}-{c}"
 
@@ -197,6 +199,7 @@ def test_curry_arbitrary_arity():
 
 def test_uncurry_arbitrary_arity():
     """Check uncurrying of a curried function with arbitrary arity."""
+
     def concat(a, b, c):
         return a + b + c
 
@@ -207,14 +210,17 @@ def test_uncurry_arbitrary_arity():
 
 def test_curry_arity_zero():
     """Check currying of a zero-arity function."""
+
     def greet():
         return "Hello"
+
     curried = curry_explicit(greet, 0)
     assert curried() == "Hello"
 
 
 def test_curry_too_many_arguments():
     """Verify that passing more than one argument at once raises an error."""
+
     def add3(a, b, c):
         return a + b + c
 
@@ -229,6 +235,7 @@ def test_curry_too_many_arguments():
 
 def test_uncurry_invalid_arity():
     """Verify that uncurrying checks the exact number of arguments."""
+
     def add(a, b):
         return a + b
 
@@ -236,6 +243,7 @@ def test_uncurry_invalid_arity():
     uncurried = uncurry_explicit(curried, 2)
     with pytest.raises(ValueError):
         uncurried(1)
+
 
 def test_cache_basic():
     """Test basic caching functionality."""
@@ -409,6 +417,8 @@ def test_cache_error_cases():
         @cache(times="invalid")
         def test_func(x):
             return x
+
+
 def test_cache_with_builtin_function():
     """Check that caching works correctly with built-in functions."""
     calls = []
@@ -462,14 +472,16 @@ def test_cache_disabled():
     @cache(times=None)
     def cube(x):
         calls.append(x)
-        return x ** 3
+        return x**3
 
     cube(2)
     cube(2)
     assert len(calls) == 2
-    
+
+
 def test_curry_invalid_nested_calls_evaluated_isolated():
     """Check that f(x=Evaluated(Isolated())) raises an error."""
+
     def f(x):
         return x
 
@@ -484,8 +496,10 @@ def test_curry_invalid_nested_calls_evaluated_isolated():
     with pytest.raises(Exception):
         curried(x=Evaluated(Isolated(123)))
 
+
 def test_curry_invalid_nested_calls_isolated_evaluated():
     """Check that f(x=Isolated(Evaluated())) raises an error."""
+
     def f(x):
         return x
 
