@@ -108,7 +108,7 @@ def cache(times: Optional[int] = None) -> Callable[[Callable[..., Any]], Callabl
         raise ValueError("Cache times must be a non-negative integer")
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        cache_storage: Dict[Tuple[Tuple[Any, ...], frozenset], Tuple[Any, int]] = OrderedDict()
+        cache_storage: "OrderedDict[Tuple[Tuple[Any, ...], frozenset], Tuple[Any, int]]" = OrderedDict()
 
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
