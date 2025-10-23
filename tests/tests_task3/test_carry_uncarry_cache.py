@@ -91,12 +91,6 @@ def test_uncurry_wrong_argument_count():
         g2(1, 2, 3)
 
 
-def test_strict_currying():
-    """Test strict currying with one argument per call."""
-    f3 = curry_explicit((lambda a, b, c: a + b + c), 3)
-    assert f3(1)(2)(3) == 6
-
-
 def test_curry_partial_application():
     """Test partial application with currying."""
     f3 = curry_explicit((lambda a, b, c: a * b * c), 3)
@@ -231,6 +225,13 @@ def test_curry_too_many_arguments_additional():
 
     with pytest.raises(ValueError):
         curried(1, 2, 3, 4)
+
+    with pytest.raises(ValueError):
+        curried(1, 2)(3)
+
+    with pytest.raises(ValueError):
+        curried(1, 2, 3) 
+        
 
 
 def test_uncurry_invalid_arity():
@@ -531,23 +532,6 @@ def test_cache_with_str_function():
 
     assert cached_str(123) == "123"
     assert call_count == 1
-
-
-def test_curry_strict_single_argument():
-    """Test that curried functions accept only one argument per intermediate call."""
-
-    def add_three(a, b, c):
-        return a + b + c
-
-    curried = curry_explicit(add_three, 3)
-
-    assert curried(1)(2)(3) == 6
-
-    with pytest.raises(
-        ValueError,
-        match="Curried function must be called with exactly one argument, got 2",
-    ):
-        curried(1)(2, 3)
 
 
 def test_curry_single_argument_constraint_after_partial():

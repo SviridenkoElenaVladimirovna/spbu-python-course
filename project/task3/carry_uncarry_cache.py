@@ -36,20 +36,20 @@ def curry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., An
         return zero_arity_curried
 
     def curried(*args: Any) -> Any:
-        if len(args) > arity:
-            raise ValueError(f"Expected at most {arity} arguments, got {len(args)}")
-        if len(args) == arity:
+        if len(args) != 1:
+            raise ValueError(
+                f"Curried function must be called with exactly one argument, got {len(args)}"
+            )
+        def next_curried(*next_args: Any) -> Any:
+            if len(next_args) != 1:
+                raise ValueError(
+                    f"Curried function must be called with exactly one argument, got {len(next_args)}"
+                )
+            return curried(*(args + next_args))
+        if arity == 1:
             return function(*args)
         else:
-
-            def next_curried(*next_args: Any) -> Any:
-                if len(next_args) != 1:
-                    raise ValueError(
-                        f"Curried function must be called with exactly one argument, got {len(next_args)}"
-                    )
-                return curried(*(args + next_args))
-
-            return next_curried
+            return curry_explicit(lambda *rest: function(*args, *rest), arity - 1)
 
     return curried
 
