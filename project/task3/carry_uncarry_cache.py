@@ -40,12 +40,14 @@ def curry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., An
             raise ValueError(
                 f"Curried function must be called with exactly one argument, got {len(args)}"
             )
+
         def next_curried(*next_args: Any) -> Any:
             if len(next_args) != 1:
                 raise ValueError(
                     f"Curried function must be called with exactly one argument, got {len(next_args)}"
                 )
             return curried(*(args + next_args))
+
         if arity == 1:
             return function(*args)
         else:

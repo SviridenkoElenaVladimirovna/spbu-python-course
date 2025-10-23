@@ -230,8 +230,7 @@ def test_curry_too_many_arguments_additional():
         curried(1, 2)(3)
 
     with pytest.raises(ValueError):
-        curried(1, 2, 3) 
-        
+        curried(1, 2, 3)
 
 
 def test_uncurry_invalid_arity():

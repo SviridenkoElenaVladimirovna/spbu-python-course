@@ -440,11 +440,12 @@ def test_smart_args_positional_arguments_error():
 
     assert valid_func(x=1, y=2) == 3
 
-        
+
 def test_function_with_evaluated_of_isolated_in_signature_raises_error():
     """Test that defining f(x=Evaluated(Isolated())) raises AssertionError."""
 
     with pytest.raises(AssertionError):
+
         @smart_args
         def f(*, x=Evaluated(Isolated())):
             return x
@@ -454,6 +455,7 @@ def test_function_with_isolated_of_evaluated_in_signature_raises_error():
     """Test that defining f(x=Isolated(Evaluated(lambda: 1))) raises TypeError."""
 
     with pytest.raises(TypeError):
+
         @smart_args
         def f(*, x=Isolated(Evaluated(lambda: 1))):
             return x
