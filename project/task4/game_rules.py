@@ -17,7 +17,9 @@ class GameRules:
         Returns:
             List of combinations, each as (name, points, dice_used)
         """
-        combinations = []
+        combinations: List[
+            Union[Tuple[str, int, List[int]], Tuple[str, int, List[int], bool]]
+        ] = []
         counts = {i: dice_values.count(i) for i in range(1, 7)}
         used_dice = []
 

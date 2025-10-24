@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
 
 
 class Player(ABC):
@@ -43,8 +43,11 @@ class Player(ABC):
 
     @abstractmethod
     def select_combinations(
-        self, combinations: List[Tuple[str, int, List[int]]]
-    ) -> List[Tuple[str, int, List[int]]]:
+        self,
+        combinations: List[
+            Union[Tuple[str, int, List[int]], Tuple[str, int, List[int], bool]]
+        ],
+    ) -> List[Union[Tuple[str, int, List[int]], Tuple[str, int, List[int], bool]]]:
         """
         Select scoring combinations from available options.
 

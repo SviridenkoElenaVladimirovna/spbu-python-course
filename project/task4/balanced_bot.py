@@ -1,5 +1,5 @@
 from project.task4.player import Player
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 
 class BalancedBot(Player):
@@ -39,8 +39,11 @@ class BalancedBot(Player):
         return True
 
     def select_combinations(
-        self, combinations: List[Tuple[str, int, List[int]]]
-    ) -> List[Tuple[str, int, List[int]]]:
+        self,
+        combinations: List[
+            Union[Tuple[str, int, List[int]], Tuple[str, int, List[int], bool]]
+        ],
+    ) -> List[Union[Tuple[str, int, List[int]], Tuple[str, int, List[int], bool]]]:
         """
         Select high-value combinations (100+ points), limited to 3.
 
