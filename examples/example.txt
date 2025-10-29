@@ -1,0 +1,276 @@
+start game
+Purpose: 5000 points
+players: ['Cautious Bot (Points: 0)', 'Aggressive Bot (Points: 0)', 'Balanced Bot (Points: 0)']
+
+ round 1
+
+ move Cautious Bot
+fell out: [1, 2, 6, 3, 3, 2]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 100
+only bones remain: 5
+fell out: [5, 6, 5, 3, 1]
+selected combinations: ['1 1', '2 5']
+points per move: 200, Total in the round: 300
+only bones remain: 2
+Cautious Bot decides to stop
+Cautious Bot earned 300 points in this round
+total score: 300
+
+ move Aggressive Bot
+fell out: [5, 5, 4, 6, 5, 1]
+selected combinations: ['1 1', '3 5']
+points per move: 600, Total in the round: 600
+only bones remain: 2
+Aggressive Bot decides to stop
+Aggressive Bot earned 600 points in this round
+total score: 600
+
+ move Balanced Bot
+fell out: [3, 6, 2, 1, 4, 1]
+selected combinations: ['2 1']
+points per move: 200, Total in the round: 200
+only bones remain: 4
+fell out: [4, 6, 5, 6]
+the player did not select any combinations - zonk
+
+ round 2
+
+ move Cautious Bot
+fell out: [2, 5, 4, 6, 2, 2]
+selected combinations: ['3 2']
+points per move: 200, Total in the round: 200
+only bones remain: 3
+fell out: [6, 6, 6]
+selected combinations: ['3 6']
+points per move: 600, Total in the round: 800
+only bones remain: 0
+Cautious Bot earned 800 points in this round
+total score: 1100
+
+ move Aggressive Bot
+fell out: [3, 4, 5, 4, 1, 2]
+selected combinations: ['1 1', '1 5']
+points per move: 150, Total in the round: 150
+only bones remain: 4
+fell out: [2, 3, 5, 4]
+selected combinations: ['1 5']
+points per move: 50, Total in the round: 200
+only bones remain: 3
+fell out: [3, 5, 5]
+selected combinations: ['2 5']
+points per move: 100, Total in the round: 300
+only bones remain: 1
+Aggressive Bot decides to stop
+Aggressive Bot earned 300 points in this round
+total score: 900
+
+ move Balanced Bot
+fell out: [3, 4, 2, 3, 2, 5]
+the player did not select any combinations - zonk
+
+ round 3
+
+ move Cautious Bot
+fell out: [1, 5, 6, 2, 2, 6]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 100
+only bones remain: 5
+fell out: [3, 2, 4, 1, 3]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 200
+only bones remain: 4
+fell out: [3, 4, 3, 3]
+selected combinations: ['3 3']
+points per move: 300, Total in the round: 500
+only bones remain: 1
+Cautious Bot decides to stop
+Cautious Bot earned 500 points in this round
+total score: 1600
+
+ move Aggressive Bot
+fell out: [2, 3, 5, 6, 3, 1]
+selected combinations: ['1 1', '1 5']
+points per move: 150, Total in the round: 150
+only bones remain: 4
+fell out: [4, 2, 1, 4]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 250
+only bones remain: 3
+fell out: [2, 3, 6]
+zonk, points per round are burned
+
+ move Balanced Bot
+fell out: [3, 5, 1, 2, 4, 3]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 100
+only bones remain: 5
+fell out: [3, 2, 1, 3, 1]
+selected combinations: ['2 1']
+points per move: 200, Total in the round: 300
+only bones remain: 3
+fell out: [6, 3, 3]
+zonk, points per round are burned
+
+ round 4
+
+ move Cautious Bot
+fell out: [3, 1, 6, 2, 6, 6]
+selected combinations: ['3 6']
+points per move: 600, Total in the round: 600
+only bones remain: 3
+Cautious Bot decides to stop
+Cautious Bot earned 600 points in this round
+total score: 2200
+
+ move Aggressive Bot
+fell out: [3, 6, 3, 1, 5, 6]
+selected combinations: ['1 1', '1 5']
+points per move: 150, Total in the round: 150
+only bones remain: 4
+fell out: [3, 4, 1, 6]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 250
+only bones remain: 3
+fell out: [6, 5, 4]
+selected combinations: ['1 5']
+points per move: 50, Total in the round: 300
+only bones remain: 2
+Aggressive Bot decides to stop
+Aggressive Bot earned 300 points in this round
+total score: 1200
+
+ move Balanced Bot
+fell out: [6, 2, 3, 2, 1, 4]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 100
+only bones remain: 5
+fell out: [3, 4, 3, 3, 1]
+selected combinations: ['1 1', '3 3']
+points per move: 400, Total in the round: 500
+only bones remain: 1
+Balanced Bot decides to stop
+Balanced Bot earned 500 points in this round
+total score: 500
+
+ round 5
+
+ move Cautious Bot
+fell out: [2, 1, 3, 1, 1, 1]
+selected combinations: ['4 1']
+points per move: 2000, Total in the round: 2000
+only bones remain: 2
+Cautious Bot decides to stop
+Cautious Bot earned 2000 points in this round
+total score: 4200
+
+ move Aggressive Bot
+fell out: [2, 5, 5, 2, 4, 6]
+selected combinations: ['2 5']
+points per move: 100, Total in the round: 100
+only bones remain: 4
+fell out: [6, 2, 6, 3]
+zonk, points per round are burned
+
+ move Balanced Bot
+fell out: [1, 2, 6, 3, 4, 4]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 100
+only bones remain: 5
+fell out: [1, 2, 2, 5, 1]
+selected combinations: ['2 1']
+points per move: 200, Total in the round: 300
+only bones remain: 3
+fell out: [4, 3, 3]
+zonk, points per round are burned
+
+ round 6
+
+ move Cautious Bot
+fell out: [5, 2, 6, 1, 3, 5]
+selected combinations: ['1 1', '2 5']
+points per move: 200, Total in the round: 200
+only bones remain: 3
+fell out: [3, 5, 3]
+selected combinations: ['1 5']
+points per move: 50, Total in the round: 250
+only bones remain: 2
+fell out: [4, 4]
+zonk, points per round are burned
+
+ move Aggressive Bot
+fell out: [4, 4, 4, 1, 4, 1]
+selected combinations: ['2 1', '4 4']
+points per move: 1000, Total in the round: 1000
+only bones remain: 0
+Aggressive Bot earned 1000 points in this round
+total score: 2200
+
+ move Balanced Bot
+fell out: [3, 1, 2, 6, 6, 5]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 100
+only bones remain: 5
+fell out: [3, 6, 1, 5, 2]
+selected combinations: ['1 1']
+points per move: 100, Total in the round: 200
+only bones remain: 4
+fell out: [5, 5, 3, 4]
+selected combinations: ['2 5']
+points per move: 100, Total in the round: 300
+only bones remain: 2
+Balanced Bot decides to stop
+Balanced Bot earned 300 points in this round
+total score: 800
+
+ round 7
+
+ move Cautious Bot
+fell out: [4, 6, 6, 4, 2, 6]
+selected combinations: ['3 6']
+points per move: 600, Total in the round: 600
+only bones remain: 3
+Cautious Bot decides to stop
+Cautious Bot earned 600 points in this round
+total score: 4800
+
+ move Aggressive Bot
+fell out: [1, 1, 1, 3, 2, 3]
+selected combinations: ['3 1']
+points per move: 1000, Total in the round: 1000
+only bones remain: 3
+Aggressive Bot decides to stop
+Aggressive Bot earned 1000 points in this round
+total score: 3200
+
+ move Balanced Bot
+fell out: [2, 3, 5, 6, 3, 3]
+selected combinations: ['3 3']
+points per move: 300, Total in the round: 300
+only bones remain: 3
+fell out: [5, 2, 5]
+selected combinations: ['2 5']
+points per move: 100, Total in the round: 400
+only bones remain: 1
+Balanced Bot decides to stop
+Balanced Bot earned 400 points in this round
+total score: 1200
+
+ round 8
+
+ move Cautious Bot
+fell out: [4, 4, 5, 4, 5, 3]
+selected combinations: ['3 4']
+points per move: 400, Total in the round: 400
+only bones remain: 3
+Cautious Bot decides to stop
+Cautious Bot earned 400 points in this round
+total score: 5200
+
+ game is over
+winner: Cautious Bot with 5200 points
+
+ final results:
+Cautious Bot: 5200 points
+Aggressive Bot: 3200 points
+Balanced Bot: 1200 points
