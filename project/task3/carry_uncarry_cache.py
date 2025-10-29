@@ -1,0 +1,156 @@
+"""
+Module for carrying and caching results.
+"""
+
+from typing import Any, Callable, Dict, Tuple, Optional
+from collections import OrderedDict
+import functools
+
+
+def curry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., Any]:
+    """
+    Convert a function of multiple arguments into its curried form.
+
+    Currying transforms a function taking N arguments into a sequence of
+    functions each taking one argument.
+
+    Args:
+        function: The function to be curried.
+        arity: The number of arguments the function expects.
+
+    Returns:
+        A curried version of the function.
+
+    Raises:
+        TypeError: If arity is negative or not an integer.
+        ValueError: If too many arguments are passed to the curried function.
+    """
+    if not isinstance(arity, int) or arity < 0:
+        raise TypeError("Arity must be a non-negative integer")
+
+    if arity == 0:
+
+        def zero_arity_curried() -> Any:
+            return function()
+
+        return zero_arity_curried
+
+    def curried(*args: Any) -> Any:
+        if len(args) != 1:
+            raise ValueError(
+                f"Curried function must be called with exactly one argument, got {len(args)}"
+            )
+
+        def next_curried(*next_args: Any) -> Any:
+            if len(next_args) != 1:
+                raise ValueError(
+                    f"Curried function must be called with exactly one argument, got {len(next_args)}"
+                )
+            return curried(*(args + next_args))
+
+        if arity == 1:
+            return function(*args)
+        else:
+            return curry_explicit(lambda *rest: function(*args, *rest), arity - 1)
+
+    return curried
+
+
+def uncurry_explicit(function: Callable[..., Any], arity: int) -> Callable[..., Any]:
+    """
+    Convert a curried function back into a regular function.
+
+    Args:
+        function: The curried function to uncurry.
+        arity: The number of arguments the resulting function should accept.
+
+    Returns:
+        A regular (uncurried) function.
+
+    Raises:
+        TypeError: If arity is negative or not an integer.
+        ValueError: If the number of provided arguments does not match the arity.
+    """
+    if not isinstance(arity, int) or arity < 0:
+        raise TypeError("Arity must be a non-negative integer")
+
+    if arity == 0:
+
+        def zero_arity_uncurried() -> Any:
+            return function()
+
+        return zero_arity_uncurried
+
+    def uncurried(*args: Any) -> Any:
+        if len(args) != arity:
+            raise ValueError(f"Expected exactly {arity} arguments, got {len(args)}")
+        result = function
+        for arg in args:
+            result = result(arg)
+        return result
+
+    return uncurried
+
+
+def cache(
+    func: Optional[Callable[..., Any]] = None,
+    *,
+    times: Optional[int] = None,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+
+    """
+    Decorator that caches the results of function calls.
+
+    Supports both positional and keyword arguments. If `times` is None, caching is disabled.
+
+    Args:
+        times: Number of recent results to cache. Must be a non-negative integer or None.
+
+    Returns:
+        A decorator that wraps the function with caching behavior.
+
+    Raises:
+        ValueError: If `times` is negative or not an integer.
+    """
+
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        if times is None:
+
+            @functools.wraps(func)
+            def no_cache_wrapper(*args: Any, **kwargs: Any) -> Any:
+                return func(*args, **kwargs)
+
+            return no_cache_wrapper
+
+        if not isinstance(times, int) or times < 0:
+            raise ValueError("Cache times must be a non-negative integer")
+
+        cache_storage: "OrderedDict[Tuple[Tuple[Any, ...], frozenset], Tuple[Any, int]]" = (
+            OrderedDict()
+        )
+
+        @functools.wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            key = (args, frozenset(kwargs.items()))
+            if key in cache_storage:
+                result, count = cache_storage[key]
+                if count > 1:
+                    cache_storage[key] = (result, count - 1)
+                else:
+                    del cache_storage[key]
+                return result
+
+            result = func(*args, **kwargs)
+            cache_storage[key] = (result, times)
+
+            if len(cache_storage) > times:
+                cache_storage.popitem(last=False)
+
+            return result
+
+        return wrapper
+
+    if func is not None and callable(func):
+        return decorator(func)
+
+    return decorator
