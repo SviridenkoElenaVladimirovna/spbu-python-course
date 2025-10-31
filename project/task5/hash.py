@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Any, Optional, Iterator, List, Tuple
+from typing import Any, Optional, Iterator, List, Tuple, Union
 
 
 class HashTable(MutableMapping):
@@ -38,7 +38,7 @@ class HashTable(MutableMapping):
 
         self._capacity: int = initial_capacity
         self._load_factor: float = load_factor
-        self._table: List[Optional[Tuple[Any, Any] | object]] = [None] * self._capacity
+        self._table: List[Optional[Union[Tuple[Any, Any], object]]] = [None] * self._capacity
         self._size: int = 0
 
     def _hash1(self, key: Any) -> int:
@@ -88,10 +88,10 @@ class HashTable(MutableMapping):
     def _find_index(self, key: Any) -> Tuple[int, bool]:
         """
         Find index for key in the table using double hashing.
-
+    
         Args:
             key: Key to find
-
+        
         Returns:
             Tuple of (index, found) where:
             - index: Slot index in the table
@@ -99,29 +99,20 @@ class HashTable(MutableMapping):
         """
         start_index: int = self._hash1(key)
         first_deleted: int = -1
-
-        for i, index in enumerate(self._probe_sequence(key, start_index)):
-            if i >= self._capacity:
-                break
+    
+        for i in range(self._capacity):
+            index = (start_index + i * self._hash2(key)) % self._capacity
             item = self._table[index]
-
+        
             if item is None:
                 return (first_deleted, False) if first_deleted != -1 else (index, False)
             elif item is self._DELETED:
                 if first_deleted == -1:
                     first_deleted = index
-            elif item[0] == key:
+            elif isinstance(item, tuple) and item[0] == key:
                 return (index, True)
-
-        if first_deleted != -1:
-            return (first_deleted, False)
-
-        for i in range(self._capacity):
-            if self._table[i] is None:
-                return (i, False)
-
-        self._resize(self._capacity * 2 + 1)
-        return self._find_index(key)
+    
+        return (first_deleted, False) if first_deleted != -1 else (0, False)
 
     def _resize_if_needed(self) -> None:
         """Check if table needs to be resized based on load factor."""
@@ -135,7 +126,7 @@ class HashTable(MutableMapping):
         Args:
             new_capacity: New table capacity
         """
-        old_table: List[Optional[Tuple[Any, Any] | object]] = self._table
+        old_table: List[Optional[Union[Tuple[Any, Any], object]]] = self._table
         old_capacity: int = self._capacity
 
         self._capacity = new_capacity
@@ -144,28 +135,36 @@ class HashTable(MutableMapping):
 
         for item in old_table:
             if item is not None and item is not self._DELETED:
-                key, value = item
-                self[key] = value
+                if isinstance(item, tuple):
+                    key, value = item
+                    self[key] = value
 
     def __setitem__(self, key: Any, value: Any) -> None:
         """
         Set key to value. Update value if key already exists.
-
+    
         Args:
             key: Key to set or update
             value: Value to associate with the key
         """
         self._resize_if_needed()
-
+    
         index: int
         found: bool
         index, found = self._find_index(key)
-
+    
         if found:
             self._table[index] = (key, value)
         else:
-            self._table[index] = (key, value)
-            self._size += 1
+            if (self._table[index] is not None and 
+                self._table[index] is not self._DELETED):
+                self._resize(self._capacity * 2 + 1)
+                index, found = self._find_index(key)
+                self._table[index] = (key, value)
+                self._size += 1
+            else:
+                self._table[index] = (key, value)
+                self._size += 1
 
     def __getitem__(self, key: Any) -> Any:
         """
@@ -187,7 +186,10 @@ class HashTable(MutableMapping):
         if not found:
             raise KeyError(key)
 
-        return self._table[index][1]
+        item = self._table[index]
+        if isinstance(item, tuple):
+            return item[1]
+        raise RuntimeError("Invalid table state")
 
     def __delitem__(self, key: Any) -> None:
         """
@@ -231,7 +233,8 @@ class HashTable(MutableMapping):
         """
         for item in self._table:
             if item is not None and item is not self._DELETED:
-                yield item[0]
+                if isinstance(item, tuple):
+                    yield item[0]
 
     def __len__(self) -> int:
         """
@@ -254,32 +257,34 @@ class HashTable(MutableMapping):
             items.append(f"{key!r}: {self[key]!r}")
         return "HashTable({" + ", ".join(items) + "})"
 
-    def keys(self) -> List[Any]:
+    def keys(self) -> Iterator[Any]:
         """
-        Return list of all keys in the table.
+        Return iterator over all keys in the table.
 
         Returns:
-            List of all keys
+            Iterator of all keys
         """
-        return [key for key in self]
+        return iter(self)
 
-    def values(self) -> List[Any]:
+    def values(self) -> Iterator[Any]:
         """
-        Return list of all values in the table.
-
-        Returns:
-            List of all values
-        """
-        return [self[key] for key in self]
-
-    def items(self) -> List[Tuple[Any, Any]]:
-        """
-        Return list of all key-value pairs in the table.
+        Return iterator over all values in the table.
 
         Returns:
-            List of all (key, value) pairs
+            Iterator of all values
         """
-        return [(key, self[key]) for key in self]
+        for key in self:
+            yield self[key]
+
+    def items(self) -> Iterator[Tuple[Any, Any]]:
+        """
+        Return iterator over all key-value pairs in the table.
+
+        Returns:
+            Iterator of all (key, value) pairs
+        """
+        for key in self:
+            yield (key, self[key])
 
     def get(self, key: Any, default: Any = None) -> Any:
         """
