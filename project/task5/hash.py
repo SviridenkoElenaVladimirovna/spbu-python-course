@@ -38,7 +38,9 @@ class HashTable(MutableMapping):
 
         self._capacity: int = initial_capacity
         self._load_factor: float = load_factor
-        self._table: List[Optional[Union[Tuple[Any, Any], object]]] = [None] * self._capacity
+        self._table: List[Optional[Union[Tuple[Any, Any], object]]] = [
+            None
+        ] * self._capacity
         self._size: int = 0
 
     def _hash1(self, key: Any) -> int:
@@ -88,10 +90,10 @@ class HashTable(MutableMapping):
     def _find_index(self, key: Any) -> Tuple[int, bool]:
         """
         Find index for key in the table using double hashing.
-    
+
         Args:
             key: Key to find
-        
+
         Returns:
             Tuple of (index, found) where:
             - index: Slot index in the table
@@ -99,11 +101,11 @@ class HashTable(MutableMapping):
         """
         start_index: int = self._hash1(key)
         first_deleted: int = -1
-    
+
         for i in range(self._capacity):
             index = (start_index + i * self._hash2(key)) % self._capacity
             item = self._table[index]
-        
+
             if item is None:
                 return (first_deleted, False) if first_deleted != -1 else (index, False)
             elif item is self._DELETED:
@@ -111,7 +113,7 @@ class HashTable(MutableMapping):
                     first_deleted = index
             elif isinstance(item, tuple) and item[0] == key:
                 return (index, True)
-    
+
         return (first_deleted, False) if first_deleted != -1 else (0, False)
 
     def _resize_if_needed(self) -> None:
@@ -142,22 +144,24 @@ class HashTable(MutableMapping):
     def __setitem__(self, key: Any, value: Any) -> None:
         """
         Set key to value. Update value if key already exists.
-    
+
         Args:
             key: Key to set or update
             value: Value to associate with the key
         """
         self._resize_if_needed()
-    
+
         index: int
         found: bool
         index, found = self._find_index(key)
-    
+
         if found:
             self._table[index] = (key, value)
         else:
-            if (self._table[index] is not None and 
-                self._table[index] is not self._DELETED):
+            if (
+                self._table[index] is not None
+                and self._table[index] is not self._DELETED
+            ):
                 self._resize(self._capacity * 2 + 1)
                 index, found = self._find_index(key)
                 self._table[index] = (key, value)
@@ -256,35 +260,6 @@ class HashTable(MutableMapping):
         for key in self:
             items.append(f"{key!r}: {self[key]!r}")
         return "HashTable({" + ", ".join(items) + "})"
-
-    def keys(self) -> Iterator[Any]:
-        """
-        Return iterator over all keys in the table.
-
-        Returns:
-            Iterator of all keys
-        """
-        return iter(self)
-
-    def values(self) -> Iterator[Any]:
-        """
-        Return iterator over all values in the table.
-
-        Returns:
-            Iterator of all values
-        """
-        for key in self:
-            yield self[key]
-
-    def items(self) -> Iterator[Tuple[Any, Any]]:
-        """
-        Return iterator over all key-value pairs in the table.
-
-        Returns:
-            Iterator of all (key, value) pairs
-        """
-        for key in self:
-            yield (key, self[key])
 
     def get(self, key: Any, default: Any = None) -> Any:
         """

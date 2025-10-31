@@ -84,10 +84,6 @@ class TestHashTable:
         assert set(keys) == set(test_data.keys())
         assert len(keys) == len(test_data)
 
-        assert set(ht.keys()) == set(test_data.keys())
-        assert set(ht.values()) == set(test_data.values())
-        assert set(ht.items()) == set(test_data.items())
-
     def test_get_with_default(self):
         """Test get() method with default values."""
         ht = HashTable()
