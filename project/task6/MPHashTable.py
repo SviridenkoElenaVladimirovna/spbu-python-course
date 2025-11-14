@@ -1,8 +1,10 @@
 from collections.abc import MutableMapping
-from typing import Any, Optional, Iterator, List, Tuple, Union
+from typing import Any, Optional, Iterator, List, Tuple, Union, Sequence
 from multiprocessing import Manager
 from multiprocessing.managers import SyncManager
 import threading
+
+Entry = Union[None, Tuple[Any, Any], object]
 
 
 class MPHashTable(MutableMapping):
@@ -66,10 +68,8 @@ class MPHashTable(MutableMapping):
 
         self._capacity = initial_capacity
         self._load_factor = load_factor
-        self._table: "List[Union[Tuple[Any, Any], None, object]]" = manager.list(
-            [None] * initial_capacity
-        )
-        self._size = manager.Value("i", 0)
+        self._table: Sequence[Entry] = manager.list([None] * initial_capacity)
+        self._size = 0
         self._lock = manager.RLock()
 
     def _hash1(self, key: Any) -> int:
