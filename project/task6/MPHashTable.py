@@ -36,8 +36,12 @@ class MPHashTable(MutableMapping):
             cls._shared_manager = Manager()
         return cls._shared_manager
 
-    def __init__(self, initial_capacity: int = 13, load_factor: float = 0.75, 
-                 manager: Optional[SyncManager] = None) -> None:
+    def __init__(
+        self,
+        initial_capacity: int = 13,
+        load_factor: float = 0.75,
+        manager: Optional[SyncManager] = None,
+    ) -> None:
         """
         Initialize the thread-safe hash table.
 
@@ -62,7 +66,9 @@ class MPHashTable(MutableMapping):
 
         self._capacity = initial_capacity
         self._load_factor = load_factor
-        self._table = manager.list([None] * initial_capacity)
+        self._table: "list[tuple[Any, Any] | None | object]" = manager.list(
+            [None] * initial_capacity
+        )
         self._size = 0
         self._lock = manager.RLock()
 
@@ -164,8 +170,10 @@ class MPHashTable(MutableMapping):
             if found:
                 self._table[index] = (key, value)
             else:
-                if (self._table[index] is not None and 
-                    self._table[index] is not self._DELETED):
+                if (
+                    self._table[index] is not None
+                    and self._table[index] is not self._DELETED
+                ):
                     self._resize(self._capacity * 2 + 1)
                     index, found = self._find_index(key)
                     self._table[index] = (key, value)
