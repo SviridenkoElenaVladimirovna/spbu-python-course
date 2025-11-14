@@ -66,10 +66,10 @@ class MPHashTable(MutableMapping):
 
         self._capacity = initial_capacity
         self._load_factor = load_factor
-        self._table: "list[tuple[Any, Any] | None | object]" = manager.list(
+        self._table: "List[Union[Tuple[Any, Any], None, object]]" = manager.list(
             [None] * initial_capacity
         )
-        self._size = 0
+        self._size = manager.Value("i", 0)
         self._lock = manager.RLock()
 
     def _hash1(self, key: Any) -> int:
