@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Any, Optional, Iterator, List, Tuple, Union, Sequence
+from typing import Any, Optional, Iterator, List, Tuple, Union, MutableSequence, cast
 from multiprocessing import Manager
 from multiprocessing.managers import SyncManager
 import threading
@@ -68,7 +68,9 @@ class MPHashTable(MutableMapping):
 
         self._capacity = initial_capacity
         self._load_factor = load_factor
-        self._table: Sequence[Entry] = manager.list([None] * initial_capacity)
+        self._table_typed = cast(
+            MutableSequence[Entry], manager.list([None] * initial_capacity)
+        )
         self._size = 0
         self._lock = manager.RLock()
 
@@ -115,7 +117,7 @@ class MPHashTable(MutableMapping):
 
         for i in range(self._capacity):
             index = (start_index + i * self._hash2(key)) % self._capacity
-            item = self._table[index]
+            item = self._table_typed[index]
 
             if item is None:
                 return (first_deleted, False) if first_deleted != -1 else (index, False)
@@ -139,11 +141,11 @@ class MPHashTable(MutableMapping):
         Args:
             new_capacity: New table capacity
         """
-        old_table = list(self._table)
+        old_table = list(self._table_typed)
         old_capacity = self._capacity
 
         self._capacity = new_capacity
-        self._table[:] = [None] * new_capacity
+        self._table_typed[:] = [None] * new_capacity
         self._size = 0
 
         for item in old_table:
@@ -168,18 +170,18 @@ class MPHashTable(MutableMapping):
             index, found = self._find_index(key)
 
             if found:
-                self._table[index] = (key, value)
+                self._table_typed[index] = (key, value)
             else:
                 if (
-                    self._table[index] is not None
-                    and self._table[index] is not self._DELETED
+                    self._table_typed[index] is not None
+                    and self._table_typed[index] is not self._DELETED
                 ):
                     self._resize(self._capacity * 2 + 1)
                     index, found = self._find_index(key)
-                    self._table[index] = (key, value)
+                    self._table_typed[index] = (key, value)
                     self._size += 1
                 else:
-                    self._table[index] = (key, value)
+                    self._table_typed[index] = (key, value)
                     self._size += 1
 
     def __getitem__(self, key: Any) -> Any:
@@ -203,7 +205,7 @@ class MPHashTable(MutableMapping):
             if not found:
                 raise KeyError(key)
 
-            item = self._table[index]
+            item = self._table_typed[index]
             if isinstance(item, tuple):
                 return item[1]
             raise RuntimeError("Invalid table state")
@@ -226,7 +228,7 @@ class MPHashTable(MutableMapping):
             if not found:
                 raise KeyError(key)
 
-            self._table[index] = self._DELETED
+            self._table_typed[index] = self._DELETED
             self._size -= 1
 
     def __contains__(self, key: Any) -> bool:
@@ -251,7 +253,7 @@ class MPHashTable(MutableMapping):
             Iterator of all keys
         """
         with self._lock:
-            for item in self._table:
+            for item in self._table_typed:
                 if item is not None and item is not self._DELETED:
                     if isinstance(item, tuple):
                         yield item[0]
@@ -298,7 +300,7 @@ class MPHashTable(MutableMapping):
     def clear(self) -> None:
         """Remove all elements from the table."""
         with self._lock:
-            self._table[:] = [None] * self._capacity
+            self._table_typed[:] = [None] * self._capacity
             self._size = 0
 
     @property
