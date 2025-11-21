@@ -69,24 +69,6 @@ class HashTable(MutableMapping):
         """
         return 1 + (hash(key) % (self._capacity - 1))
 
-    def _probe_sequence(self, key: Any, start_index: int) -> Iterator[int]:
-        """
-        Generate probe sequence using double hashing.
-
-        Args:
-            key: Key to generate probe sequence for
-            start_index: Starting index for the probe sequence
-
-        Yields:
-            Sequence of indices to probe: (h1 + i * h2) % capacity
-        """
-        hash2: int = self._hash2(key)
-        index: int = start_index
-
-        for i in range(self._capacity):
-            yield index
-            index = (index + hash2) % self._capacity
-
     def _find_index(self, key: Any) -> Tuple[int, bool]:
         """
         Find index for key in the table using double hashing.

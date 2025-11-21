@@ -104,18 +104,6 @@ class TestHashTable:
         assert 0 <= h1 < 10
         assert 1 <= h2 < 10
 
-    def test_probe_sequence(self):
-        """Test probe sequence generation."""
-        ht = HashTable(initial_capacity=5)
-        key = "test_key"
-        start_index = ht._hash1(key)
-
-        sequence = list(ht._probe_sequence(key, start_index))
-
-        assert len(sequence) == 5
-        assert all(0 <= idx < 5 for idx in sequence)
-        assert start_index in sequence
-
     def test_collision_resolution(self):
         """Test collision resolution with double hashing."""
         ht = HashTable(initial_capacity=5, load_factor=0.8)
